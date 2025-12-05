@@ -8,7 +8,7 @@ import PictureSlider from './components/PictureSlider';
 
 import Services from './components/Services';
 import Reviews from './components/Reviews';
-import Booking from './components/Booking';
+
 
 
 
@@ -17,7 +17,7 @@ function App() {
     <div className="App">
       <div className="banner">
         <h1>Dog Sitting Service</h1>
-        <button className="book-now-btn" onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})}>
+        <button className="book-now-btn" onClick={() => window.location.href = '/book'}>
           Book Now
         </button>
       </div>
@@ -25,7 +25,6 @@ function App() {
       <PictureSlider />
       <Services />
       <Reviews />
-      <Booking />
     </div>
   );
 }
