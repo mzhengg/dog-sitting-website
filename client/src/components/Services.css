@@ -1,0 +1,33 @@
+.services {
+  background: #fff0f6;
+  color: #d6336c;
+  padding: 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.services-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.service-card {
+  background: #ffe0ef;
+  border: 2px solid #ffb3c6;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 220px;
+  box-shadow: 0 2px 8px rgba(214,51,108,0.08);
+}
+.service-card h3 {
+  margin: 0 0 0.5rem 0;
+  color: #d6336c;
+  font-size: 1.2rem;
+}
+.service-card p {
+  margin: 0;
+  color: #d6336c;
+  font-size: 1rem;
+}

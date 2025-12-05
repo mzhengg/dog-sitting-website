@@ -1,0 +1,33 @@
+.booking {
+  background: #fff0f6;
+  color: #d6336c;
+  padding: 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+}
+.booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.booking-form input {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ffb3c6;
+}
+.booking-form button {
+  background: #ffb3c6;
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+.stripe-placeholder {
+  margin-top: 1rem;
+  background: #ffe0ef;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  color: #d6336c;
+}

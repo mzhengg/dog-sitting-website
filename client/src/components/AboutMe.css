@@ -1,0 +1,20 @@
+.about-me {
+  background: #fff0f6;
+  color: #d6336c;
+  padding: 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+}
+.about-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.about-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #ffb3c6;
+  background: #ffe0ef;
+}
