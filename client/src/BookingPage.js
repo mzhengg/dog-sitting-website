@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import BookingCalendar from './components/BookingCalendar';
 import './components/BookingCalendar.css';
@@ -6,11 +7,13 @@ import './BookingPage.css';
 
 
 const BookingPage = () => {
+  const navigate = useNavigate();
   const [selectedDates, setSelectedDates] = useState([]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [dogImages, setDogImages] = useState([]);
   const [phone, setPhone] = useState('');
+  const [additionalNotes, setAdditionalNotes] = useState('');
   // For each selected date, store { frequency, times: [time1, time2, ...] }
   const [dateDetails, setDateDetails] = useState({});
 
@@ -48,12 +51,29 @@ const BookingPage = () => {
     setPhone('');
     setDogImages([]);
     setDateDetails({});
+    setAdditionalNotes('');
   };
 
   return (
     <div className="App">
       <div className="banner">
         <h1>Book a Sitting</h1>
+        <button
+          style={{
+            marginTop: '1rem',
+            background: '#fff0f6',
+            color: '#d6336c',
+            border: '1.5px solid #ffb3c6',
+            borderRadius: '0.7rem',
+            padding: '0.5rem 1.2rem',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            fontSize: '1rem'
+          }}
+          onClick={() => navigate('/')}
+        >
+          ← Back to Main Page
+        </button>
       </div>
       <div className="booking-layout">
         <div className="booking-calendar-side">
@@ -119,6 +139,12 @@ const BookingPage = () => {
             <span>Upload Dog Pictures</span>
             <input type="file" multiple accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
           </label>
+          <textarea
+            className="booking-textarea"
+            value={additionalNotes}
+            onChange={e => setAdditionalNotes(e.target.value)}
+            placeholder="Additional notes for the sitter (allergies, meds, quirks, feeding instructions...)"
+          />
           <div className="dog-image-grid">
             {dogImages.map((img, idx) => (
               <img key={idx} src={URL.createObjectURL(img)} alt="dog" className="dog-image-thumb" />
