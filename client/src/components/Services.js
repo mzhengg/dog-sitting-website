@@ -1,7 +1,7 @@
 import React from 'react';
 import './Services.css';
 
-const services = [
+export const services = [
   { title: 'Dog Walking', description: 'Daily walks tailored to your dog’s needs.', price: '$20/walk' },
   { title: 'Overnight Sitting', description: 'Safe and comfortable overnight care.', price: '$60/night' },
   { title: 'Drop-In Visits', description: 'Quick check-ins for feeding, play, and potty breaks.', price: '$18/visit' },

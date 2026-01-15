@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import BookingCalendar from './components/BookingCalendar';
+import { services } from './components/Services';
 import './components/BookingCalendar.css';
 import './BookingPage.css';
 
@@ -22,13 +23,20 @@ const BookingPage = () => {
   };
 
   const handleFrequencyChange = (date, value) => {
-    setDateDetails(prev => ({
-      ...prev,
-      [date]: {
-        frequency: value,
-        times: Array(Number(value) || 0).fill('')
-      }
-    }));
+    setDateDetails(prev => {
+      const prevEntry = prev[date] || {};
+      const oldTimes = Array.isArray(prevEntry.times) ? prevEntry.times : [];
+      const newFreq = Number(value) || 0;
+      const newTimes = Array.from({ length: newFreq }, (_, i) => oldTimes[i] || '');
+      return {
+        ...prev,
+        [date]: {
+          ...prevEntry,
+          frequency: value,
+          times: newTimes
+        }
+      };
+    });
   };
 
   const handleTimeChange = (date, idx, value) => {
@@ -41,17 +49,81 @@ const BookingPage = () => {
     }));
   };
 
-  const handleSubmit = e => {
+  const handleServiceChange = (date, value) => {
+    setDateDetails(prev => ({
+      ...prev,
+      [date]: {
+        ...prev[date],
+        service: value,
+        times: prev[date]?.times || Array(Number(prev[date]?.frequency) || 0).fill('')
+      }
+    }));
+  };
+
+  const formatPriceForDate = date => {
+    const svcTitle = dateDetails[date]?.service;
+    if (!svcTitle) return '';
+    const svc = services.find(s => s.title === svcTitle);
+    if (!svc || !svc.price) return '';
+    const base = parseFloat(String(svc.price).replace(/[^0-9.]/g, '')) || 0;
+    const freq = Number(dateDetails[date]?.frequency) || 1;
+    const total = base * freq;
+    const formatted = Number.isInteger(total) ? String(total) : total.toFixed(2);
+    return `$${formatted}`;
+  };
+
+  const computeGrandTotal = () => {
+    const getNumericTotalForDate = date => {
+      const svcTitle = dateDetails[date]?.service;
+      if (!svcTitle) return 0;
+      const svc = services.find(s => s.title === svcTitle);
+      if (!svc || !svc.price) return 0;
+      const base = parseFloat(String(svc.price).replace(/[^0-9.]/g, '')) || 0;
+      const freq = Number(dateDetails[date]?.frequency) || 1;
+      return base * freq;
+    };
+
+    const total = selectedDates.reduce((sum, d) => sum + getNumericTotalForDate(d), 0);
+    return Number.isInteger(total) ? `$${total}` : `$${total.toFixed(2)}`;
+  };
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    // Placeholder: handle booking submission
-    alert('Booking submitted!');
-    setSelectedDates([]);
-    setName('');
-    setEmail('');
-    setPhone('');
-    setDogImages([]);
-    setDateDetails({});
-    setAdditionalNotes('');
+
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('selectedDates', JSON.stringify(selectedDates));
+      formData.append('dateDetails', JSON.stringify(dateDetails));
+      formData.append('additionalNotes', additionalNotes);
+      dogImages.forEach(file => formData.append('dogImages', file));
+
+      const res = await fetch('http://localhost:5000/api/bookings', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) throw new Error('Failed to submit booking');
+
+      const data = await res.json();
+      if (data.success) {
+        alert('Booking submitted!');
+        setSelectedDates([]);
+        setName('');
+        setEmail('');
+        setPhone('');
+        setDogImages([]);
+        setDateDetails({});
+        setAdditionalNotes('');
+      } else {
+        throw new Error(data.error || 'Unknown error');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error submitting booking: ' + err.message);
+    }
   };
 
   return (
@@ -86,7 +158,18 @@ const BookingPage = () => {
                   <div style={{marginBottom: '0.5rem'}}>
                     <strong>{date}</strong>
                   </div>
-                  <div style={{display: 'flex', gap: '1rem', marginBottom: '1rem'}}>
+                  <div style={{display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center'}}>
+                    <select
+                      value={dateDetails[date]?.service || ''}
+                      onChange={e => handleServiceChange(date, e.target.value)}
+                      className="booking-input"
+                      style={{minWidth: 160}}
+                    >
+                      <option value="">Select service</option>
+                      {services.map((s, i) => (
+                        <option key={i} value={s.title}>{s.title}</option>
+                      ))}
+                    </select>
                     {[1,2,3].map(n => (
                       <button
                         key={n}
@@ -109,6 +192,9 @@ const BookingPage = () => {
                       placeholder="Custom"
                       autoComplete="off"
                     />
+                    <div style={{marginLeft: 'auto', color: '#d6336c', fontWeight: 'bold'}}>
+                      {formatPriceForDate(date)}
+                    </div>
                   </div>
                   {dateDetails[date]?.frequency && Number(dateDetails[date]?.frequency) > 0 && (
                     <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
@@ -150,7 +236,10 @@ const BookingPage = () => {
               <img key={idx} src={URL.createObjectURL(img)} alt="dog" className="dog-image-thumb" />
             ))}
           </div>
-          <button className="booking-submit" type="submit">Book & Pay</button>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div style={{color: '#d6336c', fontWeight: 'bold', fontSize: '1.1rem'}}>{computeGrandTotal()}</div>
+            <button className="booking-submit" type="submit">Book & Pay</button>
+          </div>
         </form>
       </div>
     </div>
